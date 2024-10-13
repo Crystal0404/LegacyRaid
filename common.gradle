@@ -1,13 +1,22 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.github.hierynomus.license'
-apply plugin: 'fabric-loom'
+apply plugin: 'dev.architectury.loom'
 apply plugin: 'com.replaymod.preprocess'
 apply plugin: 'me.fallenbreath.yamlang'
 
-int mcVersion = project.mcVersion
+def mod_brand = (loom.platform.get() as String).toLowerCase()
+assert mod_brand in ['fabric', 'forge', 'neoforge']
+assert project.name.endsWith('-' + mod_brand)  // optional check
+
+int mcVersion = 1
 
 preprocess {
+	mcVersion = vars.get()["MC"] as int
 	tabIndentation = true
+
+	vars.put("MC", mcVersion)
+	vars.put("FABRIC", mod_brand == 'fabric' ? 1 : 0)
+	vars.put("NEOFORGE", mod_brand == 'neoforge' ? 1 : 0)
 }
 
 repositories {
@@ -16,6 +25,9 @@ repositories {
 	}
 	maven {
 		url 'https://maven.fallenbreath.me/releases'
+	}
+	maven {
+		url 'https://maven.neoforged.net/releases'
 	}
 }
 
@@ -27,24 +39,28 @@ configurations {
 dependencies {
 	// loom
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	mappings loom.layered {
+		mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+		// https://github.com/architectury/architectury-loom/issues/214
+		if (mod_brand == 'neoforge' && project.hasProperty('yarn_mappings_patch')) {
+			it.mappings("dev.architectury:yarn-mappings-patch-neoforge:${project.yarn_mappings_patch}")
+		}
+	}
+	if (mod_brand == 'fabric') {
+		modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+		include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.4.1")))
+	} else if (mod_brand == 'neoforge') {
+		neoForge "net.neoforged:neoforge:${project.neoforge_version}"
+		include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-neoforge:0.4.1")))
+	}
 
 	// runtime mods
-//	if (mcVersion < 11904) {
-//		modRuntimeOnly(mcVersion < 11900 ? "com.github.astei:lazydfu:0.1.2" : "com.github.Fallen-Breath:lazydfu:a7cfc44c0c")
-//	}
-//	// [FEATURE] MIXIN_AUDITOR
-//	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
-
-	// dependencies
-//	include(modImplementation(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
-//	include(modImplementation("me.fallenbreath:conditional-mixin-fabric:${project.conditionalmixin_version}"))
-//	include(annotationProcessor(implementation("io.github.llamalad7:mixinextras-fabric:${project.mixinextras_version}")))
 }
 
-String MIXIN_CONFIG_PATH = 'template_mod.mixins.json'
-String LANG_DIR = 'assets/template_mod/lang'
+String MOD_ICON_PATH = 'assets/legacy_raid/icon.png'
+String MIXIN_CONFIG_PATH = 'legacy_raid.mixins.json'
+String LANG_DIR = 'assets/legacy_raid/lang'
 JavaVersion JAVA_COMPATIBILITY
 if (mcVersion >= 12005) {
 	JAVA_COMPATIBILITY = JavaVersion.VERSION_21
@@ -122,18 +138,41 @@ processResources {
 	inputs.property "version", fullModVersion
 	inputs.property "minecraft_dependency", project.minecraft_dependency
 
-	filesMatching("fabric.mod.json") {
-		def valueMap = [
-				"id": project.mod_id,
-				"name": project.mod_name,
-				"version": fullModVersion,
-				"minecraft_dependency": project.minecraft_dependency,
-		]
-		expand valueMap
+	def good_files = [] as Set
+	def all_files = [] as Set
+	[
+			'fabric': ['fabric.mod.json'],
+			'neoforge': ['META-INF', 'META-INF/neoforge.mods.toml', 'pack.mcmeta'],
+	].forEach { brand, paths ->
+		all_files.addAll(paths)
+		if (brand == mod_brand) {
+			good_files.addAll(paths)
+		}
+	}
+	all_files.forEach { it2 ->
+		def path = it2 as String
+		if (good_files.contains(path)) {
+			filesMatching(path) {
+				def valueMap = [
+						"id": project.mod_id,
+						"name": project.mod_name,
+						"version": fullModVersion,
+						"minecraft_dependency": project.minecraft_dependency,
+				]
+				expand valueMap
+			}
+		} else {
+			exclude path
+		}
 	}
 
 	filesMatching(MIXIN_CONFIG_PATH) {
 		filter { s -> s.replace('{{COMPATIBILITY_LEVEL}}', "JAVA_${MIXIN_COMPATIBILITY_LEVEL.ordinal() + 1}") }
+	}
+
+	if (mod_brand == 'neoforge') {
+		// forge requires the mod icon file to be at the resource root
+		filesMatching(MOD_ICON_PATH) { f -> f.path = new File(f.path).getName() }
 	}
 }
 
@@ -199,7 +238,7 @@ license {
 	}
 	ext {
 		name = project.mod_name
-		author = 'Fallen_Breath'
+		author = 'Crystal0404'
 		year = Calendar.getInstance().get(Calendar.YEAR).toString()
 	}
 }

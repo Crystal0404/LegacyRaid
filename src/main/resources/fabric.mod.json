@@ -4,29 +4,30 @@
   "version": "${version}",
 
   "name": "${name}",
-  "description": "Template for my fabric mods",
+  "description": "hello!",
   "authors": [
-    "Fallen_Breath"
+    "Crystal0404"
   ],
   "contact": {
     "homepage": "https://modrinth.com",
     "sources": "https://github.com/Fallen-Breath/fabric-mod-template"
   },
 
-  "icon": "assets/template_mod/icon.png",
+  "icon": "assets/legacy_raid/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.fallenbreath.template_mod.TemplateMod"
+      "crystal0404.legacyraid.LegacyRaidFabric"
     ]
   },
   "mixins": [
-    "template_mod.mixins.json"
+    "legacy_raid.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.11.4",
+    "mixinextras": ">=0.4.1",
     "minecraft": "${minecraft_dependency}"
   }
 }
