@@ -51,14 +51,14 @@ body:
     attributes:
       label: Minecraft version
       description: The Minecraft version(s) where this bug occurs in.
-      placeholder: 1.15.2
+      placeholder: 1.21.1
     validations:
       required: true
   - type: input
     id: mod-version
     attributes:
-      label: TemplateMod version
-      description: The TemplateMod version(s) where this bug occurs in.
+      label: LegacyRaid version
+      description: The LegacyRaid version(s) where this bug occurs in.
       placeholder: 1.2.3
     validations:
       required: true
