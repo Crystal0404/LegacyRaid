@@ -27,5 +27,11 @@ type="incompatible"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies."${id}"]]
+modId = "raid-restore"
+type="incompatible"
+ordering = "NONE"
+side = "BOTH"
+
 [[mixins]]
 config = "${id}.mixins.json"

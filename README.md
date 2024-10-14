@@ -23,5 +23,5 @@
 
 ### 其它
 
-这个MOD来源是我制作的地毯拓展 **[CrystalCarpetAddition](https://modrinth.com/mod/crystalcarpetaddition)**
+这个MOD来源于我制作的地毯拓展 **[CrystalCarpetAddition](https://modrinth.com/mod/crystalcarpetaddition)**
 中的规则 `ReIntroduceOldVersionRaid`. 它非常受欢迎, 因此我将它做成了一个独立的MOD, 并添加了多平台支持.
