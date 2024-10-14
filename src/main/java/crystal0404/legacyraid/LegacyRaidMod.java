@@ -30,6 +30,6 @@ public final class LegacyRaidMod {
     public final static Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
     public static void init() {
-        LOGGER.info("hello!!!");
+        LOGGER.info("LegacyRaid is loaded!");
     }
 }
