@@ -48,11 +48,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(RaiderEntity.class)
 public abstract class RaiderEntityMixin extends PatrolEntity {
-    @Shadow @Nullable public abstract Raid getRaid();
-
     protected RaiderEntityMixin(EntityType<? extends PatrolEntity> entityType, World world) {
         super(entityType, world);
     }
+
+    @Shadow
+    @Nullable
+    public abstract Raid getRaid();
 
     @Inject(
             method = "onDeath",
@@ -94,7 +96,7 @@ public abstract class RaiderEntityMixin extends PatrolEntity {
                         true
                 );
                 if (
-                    !this.getWorld().getGameRules().getBoolean(GameRules.DISABLE_RAIDS)
+                        !this.getWorld().getGameRules().getBoolean(GameRules.DISABLE_RAIDS)
                 ) {
                     playerEntity.addStatusEffect(statusEffectInstance2);
                 }

@@ -29,5 +29,8 @@
     "fabricloader": ">=0.11.4",
     "mixinextras": ">=0.4.1",
     "minecraft": "${minecraft_dependency}"
+  },
+  "breaks": {
+    "cca": "*"
   }
 }
