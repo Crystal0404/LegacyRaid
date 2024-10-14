@@ -10,7 +10,7 @@ displayName = "${name}"
 displayURL = "https://github.com/Crystal0404/LegacyRaid"
 authors = "Crystal0404"
 description = '''
-hello!
+Enjoy the raid from MC1.20.x!
 '''
 logoFile = "icon.png"
 
