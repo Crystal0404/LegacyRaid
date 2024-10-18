@@ -1,14 +1,14 @@
 # LegacyRaid
 
+**中文 / [English](https://github.com/Crystal0404/LegacyRaid/blob/master/README_EN_US.md)**
+
 ### 介绍
 
 *你不觉得Minecraft-1.21+的袭击很奇怪吗?*
 
 这是一个简单的MOD, 把Minecraft-1.20.x的袭击机制移植到了Minecraft-1.21+
 
-除了正确的MC版本外, 它没有额外依赖项.
-
-**与CrystalCarpetAddition冲突**
+它没有额外依赖.
 
 ### 多平台支持
 
@@ -20,6 +20,13 @@
 | Forge    | X    |
 
 **注: Forge不会被支持. Quilt加载器安装Fabric版本即可.**
+
+### 不兼容列表
+
+| 不兼容模组                                                                   | 原因     |
+|-------------------------------------------------------------------------|--------|
+| [CrystalCarpetAddition](https://modrinth.com/mod/crystalcarpetaddition) | 实现相同功能 |
+| [Raid Restorer](https://modrinth.com/mod/raid-restore)                  | 实现相同功能 |
 
 ### 其它
 
