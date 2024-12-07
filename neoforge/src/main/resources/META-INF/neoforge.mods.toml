@@ -1,0 +1,24 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+issueTrackerURL = "https://github.com/Crystal0404/LegacyRaid/issues"
+license = "LGPL-3.0-only"
+
+[[mods]]
+modId = "legacyraid"
+version = "${version}"
+displayName = "Legacy Raid"
+authors = "Crystal0404"
+description = '''
+Huge fans of the old version of Raid!
+'''
+logoFile = "icon.png"
+
+[[dependencies.legacyraid]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21,1.21.1]"
+ordering = "NONE"
+side = "BOTH"
+
+[[mixins]]
+config = "legacyraid.mixins.json"

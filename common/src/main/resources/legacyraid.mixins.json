@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "crystal0404.legacyraid.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "mixins": [
+    "BadOmenStatusEffectMixin",
+    "RaiderEntityMixin",
+    "RaidMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

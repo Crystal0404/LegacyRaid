@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "legacyraid",
+  "version": "${version}",
+  "name": "Legacy Raid",
+  "description": "Huge fans of the old version of Raid!",
+  "authors": [
+    "Crystal0404"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/legacyraid",
+    "sources": "https://github.com/Crystal0404/LegacyRaid",
+    "issues": "https://github.com/Crystal0404/LegacyRaid/issues"
+  },
+  "license": "LGPL-3.0-only",
+  "icon": "assets/legacyraid/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "crystal0404.legacyraid.fabric.LegacyRaidFabric"
+    ]
+  },
+  "mixins": [
+    "legacyraid.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.25",
+    "minecraft": ">=1.21 <=1.21.1",
+    "java": ">=21"
+  },
+  "breaks": {
+    "cca": "*",
+    "raid-restore": "*"
+  }
+}
