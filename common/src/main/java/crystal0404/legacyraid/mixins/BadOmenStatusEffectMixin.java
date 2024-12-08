@@ -38,6 +38,7 @@ public abstract class BadOmenStatusEffectMixin {
             cancellable = true
     )
     private void applyUpdateEffectMixin(
+            ServerWorld serverWorld,
             LivingEntity entity,
             int amplifier,
             CallbackInfoReturnable<Boolean> cir

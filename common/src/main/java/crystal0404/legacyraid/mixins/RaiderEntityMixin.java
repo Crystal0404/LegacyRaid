@@ -87,7 +87,7 @@ public abstract class RaiderEntityMixin extends PatrolEntity {
                     true
             );
             if (
-                !this.getWorld().getGameRules().getBoolean(GameRules.DISABLE_RAIDS)
+                !((ServerWorld) this.getWorld()).getGameRules().getBoolean(GameRules.DISABLE_RAIDS)
             ) {
                 playerEntity.addStatusEffect(statusEffectInstance2);
             }
@@ -112,7 +112,7 @@ public abstract class RaiderEntityMixin extends PatrolEntity {
     private boolean legacyraid$hasBanner(ItemStack itemStack) {
         return ItemStack.areEqual(
                 itemStack,
-                Raid.getOminousBanner(this.getRegistryManager().getWrapperOrThrow(RegistryKeys.BANNER_PATTERN))
+                Raid.createOminousBanner(this.getRegistryManager().getOrThrow(RegistryKeys.BANNER_PATTERN))
         );
     }
 }
