@@ -6,17 +6,24 @@ license = "LGPL-3.0-only"
 [[mods]]
 modId = "legacyraid"
 version = "${version}"
-displayName = "Legacy Raid"
+displayName = "LegacyRaid"
 authors = "Crystal0404"
 description = '''
 Huge fans of the old version of Raid!
 '''
-logoFile = "icon.png"
+logoFile = "assets/legacyraid/icon.png"
+
+[[dependencies.legacyraid]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.5,)"
+ordering = "NONE"
+side = "BOTH"
 
 [[dependencies.legacyraid]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21.2,)"
+versionRange = "[1.21.5,)"
 ordering = "NONE"
 side = "BOTH"
 

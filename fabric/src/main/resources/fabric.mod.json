@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "legacyraid",
   "version": "${version}",
-  "name": "Legacy Raid",
+  "name": "LegacyRaid",
   "description": "Huge fans of the old version of Raid!",
   "authors": [
     "Crystal0404"
@@ -24,8 +24,8 @@
     "legacyraid.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.0",
-    "minecraft": ">=1.21.2",
+    "fabricloader": ">=0.16.12",
+    "minecraft": "1.21.5",
     "java": ">=21"
   },
   "breaks": {

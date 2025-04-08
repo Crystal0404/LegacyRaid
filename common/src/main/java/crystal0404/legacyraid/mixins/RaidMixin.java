@@ -1,22 +1,3 @@
-/*
- * This file is part of the LegacyRaid project, licensed under the
- * GNU Lesser General Public License v3.0
- *
- * Copyright (C) 2024  Crystal0404 and contributors
- *
- * LegacyRaid is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License.
- *
- * LegacyRaid is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with LegacyRaid.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package crystal0404.legacyraid.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -36,7 +17,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,10 +28,6 @@ import java.util.function.Supplier;
 
 @Mixin(Raid.class)
 public abstract class RaidMixin {
-    @Shadow
-    @Final
-    private ServerWorld world;
-
     @Shadow
     private BlockPos center;
 
@@ -65,10 +41,9 @@ public abstract class RaidMixin {
                     target = "Lnet/minecraft/server/network/ServerPlayerEntity;" +
                             "getStatusEffect(Lnet/minecraft/registry/entry/RegistryEntry;)" +
                             "Lnet/minecraft/entity/effect/StatusEffectInstance;"
-            ),
-            index = 0
+            )
     )
-    private RegistryEntry<StatusEffect> startMixin(RegistryEntry<StatusEffect> original) {
+    private RegistryEntry<StatusEffect> startMixin_getStatusEffect(RegistryEntry<StatusEffect> original) {
         return StatusEffects.BAD_OMEN;
     }
 
@@ -81,9 +56,10 @@ public abstract class RaidMixin {
     )
     private Supplier<? extends BlockPos> tickMixin_findRandomRaidersSpawnLocation(
             Supplier<? extends BlockPos> original,
-            @Local(ordinal = 1) int j
+            @Local(ordinal = 1) int j,
+            @Local(ordinal = 0, argsOnly = true) ServerWorld serverWorld
     ) {
-        return () -> this.legacyraid$getRavagerSpawnLocation(j, 20);
+        return () -> this.legacyraid$getRavagerSpawnLocation(serverWorld, j, 20);
     }
 
     @ModifyExpressionValue(
@@ -102,49 +78,51 @@ public abstract class RaidMixin {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/village/raid/Raid;getRaidersSpawnLocation()Ljava/util/Optional;"
+                    target = "Lnet/minecraft/village/raid/Raid;" +
+                            "getRaidersSpawnLocation(Lnet/minecraft/server/world/ServerWorld;)Ljava/util/Optional;"
             )
     )
     private Optional<BlockPos> tickMixin_getRaidersSpawnLocation(
             Raid instance,
+            ServerWorld serverWorld,
             Operation<Optional<BlockPos>> original
     ) {
-        return this.legacyraid$preCalculateRavagerSpawnLocation(this.preRaidTicks < 100 ? 1 : 0);
+        return this.legacyraid$preCalculateRavagerSpawnLocation(serverWorld, this.preRaidTicks < 100 ? 1 : 0);
     }
 
     // from Minecraft-1.21.1
     @Unique
     @Nullable
     @SuppressWarnings("deprecation")
-    private BlockPos legacyraid$getRavagerSpawnLocation(int proximity, int tries) {
+    private BlockPos legacyraid$getRavagerSpawnLocation(ServerWorld serverWorld, int proximity, int tries) {
         int i = proximity == 0 ? 2 : 2 - proximity;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         SpawnLocation spawnLocation = SpawnRestriction.getLocation(EntityType.RAVAGER);
 
         for (int j = 0; j < tries; j++) {
-            float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
+            float f = serverWorld.random.nextFloat() * (float) (Math.PI * 2);
             int k = this.center.getX() + MathHelper.floor(
-                    MathHelper.cos(f) * 32.0F * (float) i + this.world.random.nextInt(5)
+                    MathHelper.cos(f) * 32.0F * (float) i + serverWorld.random.nextInt(5)
             );
             int l = this.center.getZ() + MathHelper.floor(
-                    MathHelper.sin(f) * 32.0F * (float) i + this.world.random.nextInt(5)
+                    MathHelper.sin(f) * 32.0F * (float) i + serverWorld.random.nextInt(5)
             );
-            int m = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
+            int m = serverWorld.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
             mutable.set(k, m, l);
 
-            if (!this.world.isNearOccupiedPointOfInterest(mutable) || proximity >= 2) {
+            if (!serverWorld.isNearOccupiedPointOfInterest(mutable) || proximity >= 2) {
                 if (
-                        this.world.isRegionLoaded(
+                        serverWorld.isRegionLoaded(
                                 mutable.getX() - 10,
                                 mutable.getZ() - 10,
                                 mutable.getX() + 10,
                                 mutable.getZ() + 10
                         )
-                                && this.world.shouldTickEntity(mutable)
+                                && serverWorld.shouldTickEntityAt(mutable)
                                 && (
-                                spawnLocation.isSpawnPositionOk(this.world, mutable, EntityType.RAVAGER)
-                                        || this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW)
-                                        && this.world.getBlockState(mutable).isAir()
+                                spawnLocation.isSpawnPositionOk(serverWorld, mutable, EntityType.RAVAGER)
+                                        || serverWorld.getBlockState(mutable.down()).isOf(Blocks.SNOW)
+                                        && serverWorld.getBlockState(mutable).isAir()
                         )
                 ) {
                     return mutable;
@@ -156,9 +134,9 @@ public abstract class RaidMixin {
 
     // from Minecraft-1.21.1
     @Unique
-    private Optional<BlockPos> legacyraid$preCalculateRavagerSpawnLocation(int proximity) {
+    private Optional<BlockPos> legacyraid$preCalculateRavagerSpawnLocation(ServerWorld serverWorld, int proximity) {
         for (int i = 0; i < 3; i++) {
-            BlockPos blockPos = this.legacyraid$getRavagerSpawnLocation(proximity, 1);
+            BlockPos blockPos = this.legacyraid$getRavagerSpawnLocation(serverWorld, proximity, 1);
             if (blockPos != null) {
                 return Optional.of(blockPos);
             }

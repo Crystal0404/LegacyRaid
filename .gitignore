@@ -1,14 +1,8 @@
+# Ignore Gradle project-specific cache directory
 .gradle
 .idea
 
-common/.gradle
-common/build
-common/run
-
-fabric/.gradle
-fabric/build
+# Ignore Gradle build output directory
+build
 fabric/run
-
-neoforge/.gradle
-neoforge/build
 neoforge/run
