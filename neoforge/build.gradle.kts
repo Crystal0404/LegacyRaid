@@ -84,22 +84,21 @@ publishMods {
         version.endsWith("alpha") -> ALPHA
         else -> STABLE
     }
-    val mrOptions = modrinthOptions {
+    modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = "A4m2Hcnr"
         minecraftVersionRange {
             start = rootProject.property("start").toString()
             end = rootProject.property("end").toString()
         }
+        modLoaders.add("neoforge")
         incompatible {
             // Crystal Carpet Addition
             id = "G26sLP13"
+        }
+        incompatible {
             // Raid Restorer
             id = "7YpmyzZr"
         }
-    }
-    modrinth {
-        from(mrOptions)
-        modLoaders.add("neoforge")
     }
 }
