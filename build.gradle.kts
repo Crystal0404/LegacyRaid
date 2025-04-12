@@ -99,6 +99,12 @@ publishMods {
             start = rootProject.property("start").toString()
             end = rootProject.property("end").toString()
         }
+        incompatible {
+            // Crystal Carpet Addition
+            id = "G26sLP13"
+            // Raid Restorer
+            id = "7YpmyzZr"
+        }
     }
 
     modrinth("modrinthFabric") {
