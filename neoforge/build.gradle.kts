@@ -77,4 +77,29 @@ publishMods {
     file = tasks.remapJar.get().archiveFile
     displayName = "[NeoForge]LegacyRaid ${rootProject.property("mod_version")} for Minecraft ${rootProject.property("minecraft_version")}"
     version = "v${rootProject.property("mod_version")}-mc${rootProject.property("minecraft_version")}-neoforge"
+    changelog = providers.environmentVariable("CHANGELOG")
+    val version = rootProject.property("mod_version") as String
+    type = when {
+        version.endsWith("beta") -> BETA
+        version.endsWith("alpha") -> ALPHA
+        else -> STABLE
+    }
+    val mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = "A4m2Hcnr"
+        minecraftVersionRange {
+            start = rootProject.property("start").toString()
+            end = rootProject.property("end").toString()
+        }
+        incompatible {
+            // Crystal Carpet Addition
+            id = "G26sLP13"
+            // Raid Restorer
+            id = "7YpmyzZr"
+        }
+    }
+    modrinth {
+        from(mrOptions)
+        modLoaders.add("neoforge")
+    }
 }
